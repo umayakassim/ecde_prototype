@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ECDE School Enrollment</title>
+<style>
+  :root{
+    --accent:#d2691e;
+    --accent-dark:#b8571a;
+    --field-bg:#eef1f5;
+    --field-border:#dfe3e8;
+    --text:#1f2430;
+    --label:#2a2f3a;
+    --muted:#8a92a3;
+    --required:#e0453c;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Segoe UI', Arial, sans-serif;
+    background:#f5f6f8;
+    color:var(--text);
+    padding:32px 16px 80px;
+  }
+  .wrap{
+    max-width:1000px;
+    margin:0 auto;
+    background:#fff;
+    border:1px solid #e7e9ee;
+    border-radius:6px;
+    padding:32px 36px 28px;
+    box-shadow:0 1px 3px rgba(20,20,30,.05);
+  }
+  .top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:22px;
+  }
+  .top h1{
+    font-size:20px;
+    margin:0;
+    font-weight:700;
+  }
+  .top .sub{
+    font-size:12.5px;
+    color:var(--muted);
+    margin-top:4px;
+  }
+  .steps{
+    display:flex;
+    gap:6px;
+    font-size:11.5px;
+    color:var(--muted);
+  }
+  .steps span{
+    padding:4px 10px;
+    border-radius:12px;
+    background:#f1f2f5;
+  }
+  .steps span.active{
+    background:var(--accent);
+    color:#fff;
+  }
+  h2.section-title{
+    color:var(--accent);
+    font-size:14.5px;
+    font-weight:700;
+    margin:26px 0 14px;
+    letter-spacing:.2px;
+  }
+  h2.section-title:first-of-type{margin-top:4px;}
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:18px 26px;
+  }
+  .field{display:flex;flex-direction:column;}
+  .field.span2{grid-column:span 2;}
+  .field.span3{grid-column:span 3;}
+  label{
+    font-size:13px;
+    font-weight:600;
+    color:var(--label);
+    margin-bottom:7px;
+  }
+  label .req{color:var(--required);margin-left:3px;}
+  select, input[type=text], input[type=date], input[type=number], input[type=email], input[type=tel], textarea{
+    background:var(--field-bg);
+    border:1px solid var(--field-border);
+    border-radius:5px;
+    padding:10px 12px;
+    font-size:13.5px;
+    color:var(--text);
+    height:40px;
+    width:100%;
+    font-family:inherit;
+  }
+  textarea{height:80px;resize:vertical;padding-top:10px;}
+  select:focus, input:focus, textarea:focus{
+    outline:2px solid #c9d3e0;
+    outline-offset:0;
+    border-color:#b7c1d1;
+  }
+  select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23555' stroke-width='1.6' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:34px;}
+  input::placeholder, textarea::placeholder{color:#9aa2b1;}
+  .radio-row{display:flex;gap:26px;margin-bottom:14px;font-size:13px;color:var(--label);flex-wrap:wrap;}
+  .radio-row label{display:flex;align-items:center;gap:7px;font-weight:600;margin:0;cursor:pointer;}
+  .radio-row input{width:15px;height:15px;accent-color:var(--accent);}
+  .check-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px 20px;
+    font-size:13px;
+    color:var(--label);
+  }
+  .check-grid label{display:flex;align-items:center;gap:8px;font-weight:500;cursor:pointer;}
+  .check-grid input{width:15px;height:15px;accent-color:var(--accent);}
+  .filerow{
+    display:flex;
+    border:1px solid var(--field-border);
+    border-radius:5px;
+    overflow:hidden;
+    height:40px;
+  }
+  .filerow .choose{
+    background:#e4e7ec;
+    padding:0 14px;
+    display:flex;align-items:center;
+    font-size:13px;font-weight:600;
+    border-right:1px solid var(--field-border);
+    cursor:pointer;white-space:nowrap;
+  }
+  .filerow .fname{
+    flex:1;background:var(--field-bg);
+    display:flex;align-items:center;
+    padding:0 12px;font-size:13px;color:var(--muted);
+  }
+  .filerow .remove{
+    background:#e4e7ec;padding:0 16px;
+    display:flex;align-items:center;
+    font-size:13px;font-weight:600;color:#555;
+    border-left:1px solid var(--field-border);
+    cursor:pointer;white-space:nowrap;
+  }
+  .hint{font-size:11px;font-weight:400;color:var(--muted);margin-left:4px;}
+  .footer-row{
+    display:flex;
+    justify-content:flex-end;
+    margin-top:34px;
+    gap:12px;
+  }
+  .btn{
+    padding:10px 26px;
+    border-radius:5px;
+    font-size:13.5px;
+    font-weight:700;
+    border:1px solid var(--accent);
+    background:#fff;
+    color:var(--accent);
+    cursor:pointer;
+  }
+  .btn.primary{
+    background:var(--accent);
+    color:#fff;
+  }
+  .btn:hover{filter:brightness(0.97);}
+  @media (max-width:760px){
+    .grid, .check-grid{grid-template-columns:1fr;}
+    .field.span2, .field.span3{grid-column:span 1;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top">
+    <div>
+      <h1>ECDE School Enrollment</h1>
+      <div class="sub">Early Childhood Development Education &nbsp;·&nbsp; Centre Registration</div>
+    </div>
+    <div class="steps">
+      <span class="active">1. School Details</span>
+      <span>2. Facilities &amp; Staffing</span>
+      <span>3. Review</span>
+    </div>
+  </div>
+
+  <!-- School Identification -->
+  <h2 class="section-title">School Identification</h2>
+  <div class="radio-row">
+    <label><input type="radio" name="regtype" checked> New Centre (no MOE Code yet)</label>
+    <label><input type="radio" name="regtype"> Existing Centre (has MOE Code)</label>
+  </div>
+  <div class="grid">
+    <div class="field">
+      <label>School Name<span class="req">*</span></label>
+      <input type="text" placeholder="Enter ECDE Centre Name">
+    </div>
+    <div class="field">
+      <label>MOE Institution Code</label>
+      <input type="text" placeholder="Enter MOE Code">
+    </div>
+    <div class="field">
+      <label>Institution Type<span class="req">*</span></label>
+      <select><option>Select</option><option>Public ECDE Centre</option><option>Private ECDE Centre</option><option>Faith-Based ECDE Centre</option><option>Community-Based ECDE Centre</option></select>
+    </div>
+
+    <div class="field">
+      <label>Ownership<span class="req">*</span></label>
+      <select><option>Select</option><option>Government (County)</option><option>Private</option><option>Faith Based Organization</option><option>NGO / Community</option></select>
+    </div>
+    <div class="field">
+      <label>Registration Status<span class="req">*</span></label>
+      <select><option>Select</option><option>Registered</option><option>Provisionally Registered</option><option>Pending Registration</option></select>
+    </div>
+    <div class="field">
+      <label>Year Established</label>
+      <input type="number" placeholder="e.g. 2018">
+    </div>
+  </div>
+
+  <!-- Location -->
+  <h2 class="section-title">Location</h2>
+  <div class="grid">
+    <div class="field">
+      <label>County<span class="req">*</span></label>
+      <select><option>Select</option></select>
+    </div>
+    <div class="field">
+      <label>Sub County<span class="req">*</span></label>
+      <select><option>Select</option></select>
+    </div>
+    <div class="field">
+      <label>Ward<span class="req">*</span></label>
+      <select><option>Select</option></select>
+    </div>
+
+    <div class="field">
+      <label>Zone</label>
+      <input type="text" placeholder="Enter Zone">
+    </div>
+    <div class="field">
+      <label>Village / Estate</label>
+      <input type="text" placeholder="Enter Village or Estate">
+    </div>
+    <div class="field">
+      <label>Nearest Landmark</label>
+      <input type="text" placeholder="e.g. Near Chief's Camp">
+    </div>
+
+    <div class="field span3">
+      <label>Physical Address</label>
+      <textarea placeholder="P.O. Box, street, building"></textarea>
+    </div>
+  </div>
+
+  <!-- Contact -->
+  <h2 class="section-title">Contact Information</h2>
+  <div class="grid">
+    <div class="field">
+      <label>Head Teacher / Centre Manager<span class="req">*</span></label>
+      <input type="text" placeholder="Full Name">
+    </div>
+    <div class="field">
+      <label>Phone Number<span class="req">*</span></label>
+      <input type="tel" placeholder="07XX XXX XXX">
+    </div>
+    <div class="field">
+      <label>Email Address</label>
+      <input type="email" placeholder="school@example.com">
+    </div>
+  </div>
+
+  <!-- Grade Levels Offered -->
+  <h2 class="section-title">Grade Levels Offered</h2>
+  <div class="check-grid">
+    <label><input type="checkbox" checked> Playgroup</label>
+    <label><input type="checkbox" checked> PP1</label>
+    <label><input type="checkbox" checked> PP2</label>
+  </div>
+
+  <!-- Capacity -->
+  <h2 class="section-title">Capacity &amp; Enrolment</h2>
+  <div class="grid">
+    <div class="field">
+      <label>Number of Classrooms<span class="req">*</span></label>
+      <input type="number" placeholder="0">
+    </div>
+    <div class="field">
+      <label>Number of Teachers<span class="req">*</span></label>
+      <input type="number" placeholder="0">
+    </div>
+    <div class="field">
+      <label>Current Total Enrolment</label>
+      <input type="number" placeholder="0">
+    </div>
+
+    <div class="field">
+      <label>Pupil-Teacher Ratio</label>
+      <input type="text" placeholder="e.g. 25:1">
+    </div>
+    <div class="field">
+      <label>Feeding Programme</label>
+      <select><option>Select</option><option>Yes</option><option>No</option></select>
+    </div>
+    <div class="field">
+      <label>School Feeding Provider</label>
+      <input type="text" placeholder="e.g. County Government, Parent-funded">
+    </div>
+  </div>
+
+  <!-- Facilities -->
+  <h2 class="section-title">Facilities Available</h2>
+  <div class="check-grid">
+    <label><input type="checkbox"> Play Area / Playground</label>
+    <label><input type="checkbox"> Age-Appropriate Toilets</label>
+    <label><input type="checkbox"> Handwashing Point</label>
+    <label><input type="checkbox"> Sick Bay / First Aid</label>
+    <label><input type="checkbox"> Kitchen / Feeding Area</label>
+    <label><input type="checkbox"> Fenced Compound</label>
+    <label><input type="checkbox"> Water Supply</label>
+    <label><input type="checkbox"> Electricity</label>
+    <label><input type="checkbox"> Learning Materials Store</label>
+  </div>
+
+  <!-- Registration Certificate -->
+  <h2 class="section-title">Registration Certificate Upload <span class="hint">(Only file format PDF allowed)</span></h2>
+  <div class="grid">
+    <div class="field span2">
+      <div class="filerow">
+        <div class="choose">Choose File</div>
+        <div class="fname">No file chosen</div>
+        <div class="remove">Remove</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-row">
+    <button class="btn">Back</button>
+    <button class="btn primary">Next</button>
+  </div>
+
+</div>
+</body>
+</html>

@@ -36,6 +36,8 @@
     align-items:center;
     justify-content:space-between;
     margin-bottom:22px;
+    flex-wrap:wrap;
+    gap:12px;
   }
   .top h1{
     font-size:20px;
@@ -50,17 +52,25 @@
   .steps{
     display:flex;
     gap:6px;
-    font-size:11.5px;
-    color:var(--muted);
   }
-  .steps span{
-    padding:4px 10px;
+  .steps button{
+    padding:6px 12px;
     border-radius:12px;
     background:#f1f2f5;
+    font-size:11.5px;
+    color:var(--muted);
+    cursor:pointer;
+    font-weight:600;
+    border:none;
+    font-family:inherit;
   }
-  .steps span.active{
+  .steps button.active{
     background:var(--accent);
     color:#fff;
+  }
+  .steps button.done{
+    background:#f6e4d5;
+    color:var(--accent-dark);
   }
   h2.section-title{
     color:var(--accent);
@@ -85,7 +95,7 @@
     margin-bottom:7px;
   }
   label .req{color:var(--required);margin-left:3px;}
-  select, input[type=text], input[type=date], input.filelike{
+  select, input[type=text], input[type=date], input[type=tel], input[type=email], textarea{
     background:var(--field-bg);
     border:1px solid var(--field-border);
     border-radius:5px;
@@ -96,14 +106,15 @@
     width:100%;
     font-family:inherit;
   }
-  select:focus, input:focus{
+  textarea{height:80px;resize:vertical;padding-top:10px;}
+  select:focus, input:focus, textarea:focus{
     outline:2px solid #c9d3e0;
     outline-offset:0;
     border-color:#b7c1d1;
   }
   select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23555' stroke-width='1.6' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:34px;}
-  input::placeholder{color:#9aa2b1;}
-  .radio-row{display:flex;gap:26px;margin-bottom:14px;font-size:13px;color:var(--label);}
+  input::placeholder, textarea::placeholder{color:#9aa2b1;}
+  .radio-row{display:flex;gap:26px;margin-bottom:14px;font-size:13px;color:var(--label);flex-wrap:wrap;}
   .radio-row label{display:flex;align-items:center;gap:7px;font-weight:600;margin:0;cursor:pointer;}
   .radio-row input{width:15px;height:15px;accent-color:var(--accent);}
   .filerow{
@@ -154,34 +165,31 @@
     background:var(--accent);
     color:#fff;
   }
-  .btn:hover{filter:brightness(0.97);}
-  .dropdown-demo{
-    position:relative;
-    display:inline-block;
-    width:100%;
+  .btn[disabled]{opacity:.4;cursor:not-allowed;}
+  .btn:hover:not([disabled]){filter:brightness(0.97);}
+  .panel{display:none;}
+  .panel.active{display:block;}
+  .review-block{margin-bottom:22px;}
+  .review-block h3{
+    font-size:13px;color:var(--accent);margin:0 0 10px;
+    text-transform:uppercase;letter-spacing:.4px;
   }
-  .dd-panel{
-    position:absolute;
-    top:44px;left:0;right:0;
-    background:#f4f6f8;
+  .review-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px 24px;
+    background:var(--field-bg);
     border:1px solid var(--field-border);
-    border-radius:5px;
-    box-shadow:0 6px 16px rgba(20,20,30,.12);
-    z-index:5;
-    overflow:hidden;
-    display:none;
+    border-radius:6px;
+    padding:16px 18px;
+    margin:0;
   }
-  .dropdown-demo.open .dd-panel{display:block;}
-  .dropdown-demo.open select{border-color:#8aa0c9;}
-  .dd-item{
-    padding:11px 14px;
-    font-size:13.5px;
-    cursor:pointer;
-  }
-  .dd-item.selected-head{background:var(--accent);color:#fff;font-weight:600;}
-  .dd-item:not(.selected-head):hover{background:#e8ebef;}
+  .review-item{margin:0;padding:6px 0;}
+  .review-item dt{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;}
+  .review-item dd{margin:2px 0 0;font-size:13.5px;color:var(--text);}
+  .empty-note{font-size:12.5px;color:var(--muted);font-style:italic;}
   @media (max-width:760px){
-    .grid{grid-template-columns:1fr;}
+    .grid, .review-grid{grid-template-columns:1fr;}
     .field.span2, .field.span3{grid-column:span 1;}
   }
 </style>
@@ -195,194 +203,313 @@
       <div class="sub">Early Childhood Development Education &nbsp;·&nbsp; New Learner Enrolment</div>
     </div>
     <div class="steps">
-      <span class="active">1. Learner Details</span>
-      <span>2. Guardian Details</span>
-      <span>3. Review</span>
+      <button type="button" class="step-btn active" data-step="1">1. Learner Details</button>
+      <button type="button" class="step-btn" data-step="2">2. Guardian Details</button>
+      <button type="button" class="step-btn" data-step="3">3. Review</button>
     </div>
   </div>
 
-  <!-- Grade Details -->
-  <h2 class="section-title">Grade Details</h2>
-  <div class="grid">
-    <div class="field">
-      <label>Grade Level<span class="req">*</span></label>
-      <div class="dropdown-demo" id="gradeDemo">
-        <select id="gradeSelect">
-          <option value="">Select</option>
-          <option>Playgroup</option>
-          <option>PP1</option>
-          <option>PP2</option>
-        </select>
-        <div class="dd-panel">
-          <div class="dd-item selected-head">Select</div>
-          <div class="dd-item">Playgroup</div>
-          <div class="dd-item">PP1</div>
-          <div class="dd-item">PP2</div>
+  <!-- STEP 1: LEARNER DETAILS -->
+  <div class="panel active" data-panel="1">
+
+    <h2 class="section-title">Grade Details</h2>
+    <div class="grid">
+      <div class="field">
+        <label>Grade Level<span class="req">*</span></label>
+        <select id="f_grade"><option value="">Select</option><option>Playgroup</option><option>PP1</option><option>PP2</option></select>
+      </div>
+    </div>
+
+    <h2 class="section-title">Name (As per Birth Certificate):</h2>
+    <div class="radio-row">
+      <label><input type="radio" name="idtype" checked> Birth Certificate Number</label>
+      <label><input type="radio" name="idtype"> KEMIS Pupil Number (if previously registered)</label>
+    </div>
+    <div class="grid">
+      <div class="field">
+        <label>Birth Certificate Number<span class="req">*</span></label>
+        <input type="text" id="f_bcert" placeholder="Enter Birth Certificate Number">
+      </div>
+      <div class="field">
+        <label>First Name<span class="req">*</span></label>
+        <input type="text" id="f_first" placeholder="First Name">
+      </div>
+      <div class="field">
+        <label>Middle Name</label>
+        <input type="text" id="f_middle" placeholder="Middle Name">
+      </div>
+
+      <div class="field">
+        <label>Last Name<span class="req">*</span></label>
+        <input type="text" id="f_last" placeholder="Last Name">
+      </div>
+      <div class="field">
+        <label>Learner Interests</label>
+        <select id="f_interest"><option>Select</option><option>Storytelling</option><option>Drawing &amp; Colouring</option><option>Music &amp; Rhymes</option><option>Outdoor Play</option></select>
+      </div>
+      <div class="field">
+        <label>Medical Condition</label>
+        <select id="f_medical"><option>Select</option><option>None</option><option>Asthma</option><option>Allergy</option><option>Other</option></select>
+      </div>
+
+      <div class="field">
+        <label>Religion</label>
+        <select id="f_religion"><option>Select</option><option>Christian</option><option>Muslim</option><option>Hindu</option><option>Other</option></select>
+      </div>
+    </div>
+
+    <h2 class="section-title">Address</h2>
+    <div class="grid">
+      <div class="field">
+        <label>Country of Birth<span class="req">*</span></label>
+        <select id="f_country"><option>Kenya</option></select>
+      </div>
+      <div class="field">
+        <label>County of Birth<span class="req">*</span></label>
+        <select id="f_county"><option value="">Select</option></select>
+      </div>
+      <div class="field">
+        <label>Sub County of Birth<span class="req">*</span></label>
+        <select id="f_subcounty"><option>Select</option></select>
+      </div>
+      <div class="field">
+        <label>Location Of Birth</label>
+        <input type="text" id="f_location">
+      </div>
+    </div>
+
+    <h2 class="section-title">Biographical Information</h2>
+    <div class="grid">
+      <div class="field">
+        <label>Sex<span class="req">*</span></label>
+        <select id="f_sex"><option>Select</option><option>Male</option><option>Female</option></select>
+      </div>
+      <div class="field">
+        <label>Date of Birth<span class="req">*</span></label>
+        <input type="date" id="f_dob">
+      </div>
+      <div class="field">
+        <label>Orphan<span class="req">*</span></label>
+        <select id="f_orphan"><option>No</option><option>Yes - Single Orphan</option><option>Yes - Double Orphan</option></select>
+      </div>
+      <div class="field">
+        <label>SNE/Disability<span class="req">*</span></label>
+        <select id="f_sne"><option>Select</option><option>None</option><option>Visual</option><option>Hearing</option><option>Physical</option><option>Other</option></select>
+      </div>
+    </div>
+
+    <h2 class="section-title">Learner's Photo <span class="hint">(only allow .jpeg or .png)</span></h2>
+    <div class="grid">
+      <div class="field span2">
+        <div class="filerow">
+          <div class="choose">Choose File</div>
+          <div class="fname">No file chosen</div>
+          <div class="remove">Remove</div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Name -->
-  <h2 class="section-title">Name (As per Birth Certificate):</h2>
-  <div class="radio-row">
-    <label><input type="radio" name="idtype" checked> Birth Certificate Number</label>
-    <label><input type="radio" name="idtype"> KEMIS ULI Number (if previously registered)</label>
-  </div>
-  <div class="grid">
-    <div class="field">
-      <label>Birth Certificate Number<span class="req">*</span></label>
-      <input type="text" placeholder="Enter Birth Certificate Number">
-    </div>
-    <div class="field">
-      <label>First Name<span class="req">*</span></label>
-      <input type="text" placeholder="First Name">
-    </div>
-    <div class="field">
-      <label>Middle Name</label>
-      <input type="text" placeholder="Middle Name">
-    </div>
-
-    <div class="field">
-      <label>Last Name<span class="req">*</span></label>
-      <input type="text" placeholder="Last Name">
-    </div>
-    <div class="field">
-      <label>Learner Interests</label>
-      <select><option>Select</option><option>Storytelling</option><option>Drawing &amp; Colouring</option><option>Music &amp; Rhymes</option><option>Outdoor Play</option></select>
-    </div>
-    <div class="field">
-      <label>Medical Condition</label>
-      <select><option>Select</option><option>None</option><option>Asthma</option><option>Allergy</option><option>Other</option></select>
-    </div>
-
-    <div class="field">
-      <label>Religion</label>
-      <select><option>Select</option><option>Christian</option><option>Muslim</option><option>Hindu</option><option>Other</option></select>
-    </div>
-  </div>
-
-  <!-- Address -->
-  <h2 class="section-title">Address</h2>
-  <div class="grid">
-    <div class="field">
-      <label>Country of Birth<span class="req">*</span></label>
-      <select><option>Kenya</option></select>
-    </div>
-    <div class="field">
-      <label>County of Birth<span class="req">*</span></label>
-      <select><option value="">Select</option></select>
-    </div>
-    <div class="field">
-      <label>Sub County of Birth<span class="req">*</span></label>
-      <select><option>Select</option></select>
-    </div>
-    <div class="field">
-      <label>Location Of Birth</label>
-      <input type="text">
-    </div>
-  </div>
-
-  <!-- Biographical -->
-  <h2 class="section-title">Biographical Information</h2>
-  <div class="grid">
-    <div class="field">
-      <label>Sex<span class="req">*</span></label>
-      <select><option>Select</option><option>Male</option><option>Female</option></select>
-    </div>
-    <div class="field">
-      <label>Date of Birth<span class="req">*</span></label>
-      <input type="date">
-    </div>
-    <div class="field">
-      <label>Orphan<span class="req">*</span></label>
-      <select><option>No</option><option>Yes - Single Orphan</option><option>Yes - Double Orphan</option></select>
-    </div>
-    <div class="field">
-      <label>SNE/Disability<span class="req">*</span></label>
-      <select><option>Select</option><option>None</option><option>Visual</option><option>Hearing</option><option>Physical</option><option>Other</option></select>
-    </div>
-  </div>
-
-  <!-- Photo -->
-  <h2 class="section-title">Learner's Photo <span class="hint">(only allow .jpeg or .png)</span></h2>
-  <div class="grid">
-    <div class="field span2">
-      <div class="filerow">
-        <div class="choose">Choose File</div>
-        <div class="fname">No file chosen</div>
-        <div class="remove">Remove</div>
+    <h2 class="section-title">Citizenship Information</h2>
+    <div class="grid">
+      <div class="field">
+        <label>Nationality<span class="req">*</span></label>
+        <select id="f_nat"><option>Kenyan</option><option>Other</option></select>
+      </div>
+      <div class="field">
+        <label>Identification Document Type</label>
+        <select id="f_idtype"><option>Select</option><option>Birth Certificate</option><option>Refugee ID</option><option>Other</option></select>
+      </div>
+      <div class="field">
+        <label>Identification Number</label>
+        <input type="text" id="f_idnum" placeholder="Enter National ID Number">
       </div>
     </div>
-  </div>
 
-  <!-- Citizenship -->
-  <h2 class="section-title">Citizenship Information</h2>
-  <div class="grid">
-    <div class="field">
-      <label>Nationality<span class="req">*</span></label>
-      <select><option>Kenyan</option><option>Other</option></select>
-    </div>
-    <div class="field">
-      <label>Identification Document Type</label>
-      <select><option>Select</option><option>Birth Certificate</option><option>Refugee ID</option><option>Other</option></select>
-    </div>
-    <div class="field">
-      <label>Identification Number</label>
-      <input type="text" placeholder="Enter ID Number">
-    </div>
-  </div>
-
-  <h2 class="section-title">Identification Document Upload <span class="hint">(Only file format PDF allowed)</span></h2>
-  <div class="grid">
-    <div class="field span2">
-      <div class="filerow">
-        <div class="choose">Choose File</div>
-        <div class="fname">No file chosen</div>
-        <div class="remove">Remove</div>
+    <h2 class="section-title">Identification Document Upload <span class="hint">(Only file format PDF allowed)</span></h2>
+    <div class="grid">
+      <div class="field span2">
+        <div class="filerow">
+          <div class="choose">Choose File</div>
+          <div class="fname">No file chosen</div>
+          <div class="remove">Remove</div>
+        </div>
       </div>
     </div>
+
+    <h2 class="section-title">Academic Information</h2>
+    <div class="grid">
+      <div class="field">
+        <label>Centre Attendance Status<span class="req">*</span></label>
+        <select id="f_boarding"><option>Day Scholar</option><option>Boarder</option></select>
+      </div>
+      <div class="field">
+        <label>Year of Enrolment<span class="req">*</span></label>
+        <select id="f_year"><option>2026</option><option>2025</option></select>
+      </div>
+    </div>
+
+    <div class="footer-row">
+      <button class="btn" disabled>Back</button>
+      <button class="btn primary" onclick="goStep(2)">Next</button>
+    </div>
   </div>
 
-  <!-- Academic -->
-  <h2 class="section-title">Academic Information</h2>
-  <div class="grid">
-    <div class="field">
-      <label>Centre Attendance Status<span class="req">*</span></label>
-      <select><option>Day Scholar</option><option>Boarder</option></select>
+  <!-- STEP 2: GUARDIAN DETAILS -->
+  <div class="panel" data-panel="2">
+
+    <h2 class="section-title">Parent / Guardian Information</h2>
+    <div class="grid">
+      <div class="field">
+        <label>Relationship to Learner<span class="req">*</span></label>
+        <select id="g_rel"><option>Select</option><option>Mother</option><option>Father</option><option>Guardian</option><option>Grandparent</option><option>Sibling</option></select>
+      </div>
+      <div class="field">
+        <label>First Name<span class="req">*</span></label>
+        <input type="text" id="g_first" placeholder="First Name">
+      </div>
+      <div class="field">
+        <label>Last Name<span class="req">*</span></label>
+        <input type="text" id="g_last" placeholder="Last Name">
+      </div>
+
+      <div class="field">
+        <label>National ID Number<span class="req">*</span></label>
+        <input type="text" id="g_id" placeholder="Enter National ID Number">
+      </div>
+      <div class="field">
+        <label>Phone Number<span class="req">*</span></label>
+        <input type="tel" id="g_phone" placeholder="07XX XXX XXX">
+      </div>
+      <div class="field">
+        <label>Email Address</label>
+        <input type="email" id="g_email" placeholder="guardian@example.com">
+      </div>
+
+      <div class="field">
+        <label>Occupation</label>
+        <input type="text" id="g_occupation" placeholder="e.g. Farmer, Trader">
+      </div>
+      <div class="field">
+        <label>Level of Education</label>
+        <select id="g_edu"><option>Select</option><option>None</option><option>Primary</option><option>Secondary</option><option>Tertiary</option><option>University</option></select>
+      </div>
+      <div class="field">
+        <label>Marital Status</label>
+        <select id="g_marital"><option>Select</option><option>Married</option><option>Single</option><option>Widowed</option><option>Separated</option></select>
+      </div>
+
+      <div class="field span3">
+        <label>Residential Address</label>
+        <textarea id="g_address" placeholder="Village, estate, or postal address"></textarea>
+      </div>
     </div>
-    <div class="field">
-      <label>Year of Enrolment<span class="req">*</span></label>
-      <select><option>2026</option><option>2025</option></select>
+
+    <h2 class="section-title">Emergency Contact</h2>
+    <div class="grid">
+      <div class="field">
+        <label>Emergency Contact Name<span class="req">*</span></label>
+        <input type="text" id="e_name" placeholder="Full Name">
+      </div>
+      <div class="field">
+        <label>Relationship to Learner<span class="req">*</span></label>
+        <input type="text" id="e_rel" placeholder="e.g. Aunt, Neighbour">
+      </div>
+      <div class="field">
+        <label>Emergency Phone Number<span class="req">*</span></label>
+        <input type="tel" id="e_phone" placeholder="07XX XXX XXX">
+      </div>
+    </div>
+
+    <h2 class="section-title">Guardian ID Upload <span class="hint">(Only file format PDF allowed)</span></h2>
+    <div class="grid">
+      <div class="field span2">
+        <div class="filerow">
+          <div class="choose">Choose File</div>
+          <div class="fname">No file chosen</div>
+          <div class="remove">Remove</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-row">
+      <button class="btn" onclick="goStep(1)">Back</button>
+      <button class="btn primary" onclick="goStep(3)">Next</button>
     </div>
   </div>
 
-  <div class="footer-row">
-    <button class="btn">Back</button>
-    <button class="btn primary">Next</button>
+  <!-- STEP 3: REVIEW -->
+  <div class="panel" data-panel="3">
+    <h2 class="section-title">Review &amp; Submit</h2>
+    <p class="empty-note" style="margin-bottom:20px;">Please confirm the details below before submitting. Go back to any step to make changes.</p>
+
+    <div class="review-block">
+      <h3>Learner Details</h3>
+      <dl class="review-grid" id="review-learner"></dl>
+    </div>
+
+    <div class="review-block">
+      <h3>Guardian &amp; Emergency Contact</h3>
+      <dl class="review-grid" id="review-guardian"></dl>
+    </div>
+
+    <div class="footer-row">
+      <button class="btn" onclick="goStep(2)">Back</button>
+      <button class="btn primary" onclick="alert('This is a prototype \u2014 submission is not wired to a backend yet.')">Submit</button>
+    </div>
   </div>
 
 </div>
 
 <script>
-  // Simple visual demo of the Grade Level dropdown behaviour shown in the reference screenshot
-  const demo = document.getElementById('gradeDemo');
-  const select = document.getElementById('gradeSelect');
-  select.addEventListener('mousedown', (e)=>{
-    e.preventDefault();
-    demo.classList.toggle('open');
-  });
-  document.querySelectorAll('#gradeDemo .dd-item').forEach(item=>{
-    item.addEventListener('click', ()=>{
-      if(!item.classList.contains('selected-head')){
-        select.value = item.textContent;
-      }
-      demo.classList.remove('open');
+  function goStep(n){
+    document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active', p.dataset.panel==n));
+    document.querySelectorAll('.step-btn').forEach(b=>{
+      const s = parseInt(b.dataset.step);
+      b.classList.toggle('active', s===n);
+      b.classList.toggle('done', s<n);
     });
+    if(n===3) buildReview();
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  document.querySelectorAll('.step-btn').forEach(b=>{
+    b.addEventListener('click', ()=> goStep(parseInt(b.dataset.step)));
   });
-  document.addEventListener('click', (e)=>{
-    if(!demo.contains(e.target)) demo.classList.remove('open');
-  });
+
+  function val(id){
+    const el = document.getElementById(id);
+    if(!el) return '';
+    return el.value && el.value !== 'Select' ? el.value : '';
+  }
+
+  function item(dt, dd){
+    const wrap = document.createElement('div');
+    wrap.className = 'review-item';
+    wrap.innerHTML = `<dt>${dt}</dt><dd>${dd || '<span class="empty-note">Not provided</span>'}</dd>`;
+    return wrap;
+  }
+
+  function buildReview(){
+    const learnerFields = [
+      ['Grade Level','f_grade'],['Birth Certificate No.','f_bcert'],
+      ['First Name','f_first'],['Middle Name','f_middle'],['Last Name','f_last'],
+      ['Religion','f_religion'],['County of Birth','f_county'],['Sub County of Birth','f_subcounty'],
+      ['Sex','f_sex'],['Date of Birth','f_dob'],['Orphan','f_orphan'],['SNE/Disability','f_sne'],
+      ['Nationality','f_nat'],['ID Number','f_idnum'],
+      ['Centre Attendance Status','f_boarding'],['Year of Enrolment','f_year']
+    ];
+    const guardianFields = [
+      ['Relationship','g_rel'],['First Name','g_first'],['Last Name','g_last'],
+      ['National ID','g_id'],['Phone Number','g_phone'],['Email','g_email'],
+      ['Occupation','g_occupation'],['Emergency Contact Name','e_name'],
+      ['Emergency Contact Phone','e_phone']
+    ];
+    const l = document.getElementById('review-learner');
+    const g = document.getElementById('review-guardian');
+    l.innerHTML = ''; g.innerHTML = '';
+    learnerFields.forEach(([label,id]) => l.appendChild(item(label, val(id))));
+    guardianFields.forEach(([label,id]) => g.appendChild(item(label, val(id))));
+  }
 </script>
 
 </body>

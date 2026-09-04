@@ -36,6 +36,8 @@
     align-items:center;
     justify-content:space-between;
     margin-bottom:22px;
+    flex-wrap:wrap;
+    gap:12px;
   }
   .top h1{
     font-size:20px;
@@ -50,17 +52,25 @@
   .steps{
     display:flex;
     gap:6px;
-    font-size:11.5px;
-    color:var(--muted);
   }
-  .steps span{
-    padding:4px 10px;
+  .steps button{
+    padding:6px 12px;
     border-radius:12px;
     background:#f1f2f5;
+    font-size:11.5px;
+    color:var(--muted);
+    cursor:pointer;
+    font-weight:600;
+    border:none;
+    font-family:inherit;
   }
-  .steps span.active{
+  .steps button.active{
     background:var(--accent);
     color:#fff;
+  }
+  .steps button.done{
+    background:#f6e4d5;
+    color:var(--accent-dark);
   }
   h2.section-title{
     color:var(--accent);
@@ -164,9 +174,31 @@
     background:var(--accent);
     color:#fff;
   }
-  .btn:hover{filter:brightness(0.97);}
+  .btn[disabled]{opacity:.4;cursor:not-allowed;}
+  .btn:hover:not([disabled]){filter:brightness(0.97);}
+  .panel{display:none;}
+  .panel.active{display:block;}
+  .review-block{margin-bottom:22px;}
+  .review-block h3{
+    font-size:13px;color:var(--accent);margin:0 0 10px;
+    text-transform:uppercase;letter-spacing:.4px;
+  }
+  .review-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px 24px;
+    background:var(--field-bg);
+    border:1px solid var(--field-border);
+    border-radius:6px;
+    padding:16px 18px;
+    margin:0;
+  }
+  .review-item{margin:0;padding:6px 0;}
+  .review-item dt{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;}
+  .review-item dd{margin:2px 0 0;font-size:13.5px;color:var(--text);}
+  .empty-note{font-size:12.5px;color:var(--muted);font-style:italic;}
   @media (max-width:760px){
-    .grid, .check-grid{grid-template-columns:1fr;}
+    .grid, .check-grid, .review-grid{grid-template-columns:1fr;}
     .field.span2, .field.span3{grid-column:span 1;}
   }
 </style>
@@ -180,167 +212,295 @@
       <div class="sub">Early Childhood Development Education &nbsp;·&nbsp; Centre Registration</div>
     </div>
     <div class="steps">
-      <span class="active">1. School Details</span>
-      <span>2. Facilities &amp; Staffing</span>
-      <span>3. Review</span>
+      <button type="button" class="step-btn active" data-step="1">1. School Details</button>
+      <button type="button" class="step-btn" data-step="2">2. Facilities &amp; Staffing</button>
+      <button type="button" class="step-btn" data-step="3">3. Review</button>
     </div>
   </div>
 
-  <!-- School Identification -->
-  <h2 class="section-title">School Identification</h2>
-  <div class="radio-row">
-    <label><input type="radio" name="regtype" checked> New Centre (no MOE Code yet)</label>
-    <label><input type="radio" name="regtype"> Existing Centre (has MOE Code)</label>
-  </div>
-  <div class="grid">
-    <div class="field">
-      <label>School Name<span class="req">*</span></label>
-      <input type="text" placeholder="Enter ECDE Centre Name">
-    </div>
-    <div class="field">
-      <label>MOE Institution Code</label>
-      <input type="text" placeholder="Enter MOE Code">
-    </div>
-    <div class="field">
-      <label>Institution Type<span class="req">*</span></label>
-      <select><option>Select</option><option>Public ECDE Centre</option><option>Private ECDE Centre</option><option>Faith-Based ECDE Centre</option><option>Community-Based ECDE Centre</option></select>
-    </div>
+  <!-- STEP 1: SCHOOL DETAILS -->
+  <div class="panel active" data-panel="1">
 
-    <div class="field">
-      <label>Ownership<span class="req">*</span></label>
-      <select><option>Select</option><option>Government (County)</option><option>Private</option><option>Faith Based Organization</option><option>NGO / Community</option></select>
+    <h2 class="section-title">School Identification</h2>
+    <div class="radio-row">
+      <label><input type="radio" name="regtype" checked> New Centre (no MOE Code yet)</label>
+      <label><input type="radio" name="regtype"> Existing Centre (has MOE Code)</label>
     </div>
-    <div class="field">
-      <label>Registration Status<span class="req">*</span></label>
-      <select><option>Select</option><option>Registered</option><option>Provisionally Registered</option><option>Pending Registration</option></select>
-    </div>
-    <div class="field">
-      <label>Year Established</label>
-      <input type="number" placeholder="e.g. 2018">
-    </div>
-  </div>
+    <div class="grid">
+      <div class="field">
+        <label>School Name<span class="req">*</span></label>
+        <input type="text" id="s_name" placeholder="Enter ECDE Centre Name">
+      </div>
+      <div class="field">
+        <label>MOE Institution Code</label>
+        <input type="text" id="s_moecode" placeholder="Enter MOE Code">
+      </div>
+      <div class="field">
+        <label>Institution Type<span class="req">*</span></label>
+        <select id="s_type"><option>Select</option><option>Public ECDE Centre</option><option>Private ECDE Centre</option><option>Faith-Based ECDE Centre</option><option>Community-Based ECDE Centre</option></select>
+      </div>
 
-  <!-- Location -->
-  <h2 class="section-title">Location</h2>
-  <div class="grid">
-    <div class="field">
-      <label>County<span class="req">*</span></label>
-      <select><option>Select</option></select>
-    </div>
-    <div class="field">
-      <label>Sub County<span class="req">*</span></label>
-      <select><option>Select</option></select>
-    </div>
-    <div class="field">
-      <label>Ward<span class="req">*</span></label>
-      <select><option>Select</option></select>
-    </div>
-
-    <div class="field">
-      <label>Zone</label>
-      <input type="text" placeholder="Enter Zone">
-    </div>
-    <div class="field">
-      <label>Village / Estate</label>
-      <input type="text" placeholder="Enter Village or Estate">
-    </div>
-    <div class="field">
-      <label>Nearest Landmark</label>
-      <input type="text" placeholder="e.g. Near Chief's Camp">
-    </div>
-
-    <div class="field span3">
-      <label>Physical Address</label>
-      <textarea placeholder="P.O. Box, street, building"></textarea>
-    </div>
-  </div>
-
-  <!-- Contact -->
-  <h2 class="section-title">Contact Information</h2>
-  <div class="grid">
-    <div class="field">
-      <label>Head Teacher / Centre Manager<span class="req">*</span></label>
-      <input type="text" placeholder="Full Name">
-    </div>
-    <div class="field">
-      <label>Phone Number<span class="req">*</span></label>
-      <input type="tel" placeholder="07XX XXX XXX">
-    </div>
-    <div class="field">
-      <label>Email Address</label>
-      <input type="email" placeholder="school@example.com">
-    </div>
-  </div>
-
-  <!-- Grade Levels Offered -->
-  <h2 class="section-title">Grade Levels Offered</h2>
-  <div class="check-grid">
-    <label><input type="checkbox" checked> Playgroup</label>
-    <label><input type="checkbox" checked> PP1</label>
-    <label><input type="checkbox" checked> PP2</label>
-  </div>
-
-  <!-- Capacity -->
-  <h2 class="section-title">Capacity &amp; Enrolment</h2>
-  <div class="grid">
-    <div class="field">
-      <label>Number of Classrooms<span class="req">*</span></label>
-      <input type="number" placeholder="0">
-    </div>
-    <div class="field">
-      <label>Number of Teachers<span class="req">*</span></label>
-      <input type="number" placeholder="0">
-    </div>
-    <div class="field">
-      <label>Current Total Enrolment</label>
-      <input type="number" placeholder="0">
-    </div>
-
-    <div class="field">
-      <label>Pupil-Teacher Ratio</label>
-      <input type="text" placeholder="e.g. 25:1">
-    </div>
-    <div class="field">
-      <label>Feeding Programme</label>
-      <select><option>Select</option><option>Yes</option><option>No</option></select>
-    </div>
-    <div class="field">
-      <label>School Feeding Provider</label>
-      <input type="text" placeholder="e.g. County Government, Parent-funded">
-    </div>
-  </div>
-
-  <!-- Facilities -->
-  <h2 class="section-title">Facilities Available</h2>
-  <div class="check-grid">
-    <label><input type="checkbox"> Play Area / Playground</label>
-    <label><input type="checkbox"> Age-Appropriate Toilets</label>
-    <label><input type="checkbox"> Handwashing Point</label>
-    <label><input type="checkbox"> Sick Bay / First Aid</label>
-    <label><input type="checkbox"> Kitchen / Feeding Area</label>
-    <label><input type="checkbox"> Fenced Compound</label>
-    <label><input type="checkbox"> Water Supply</label>
-    <label><input type="checkbox"> Electricity</label>
-    <label><input type="checkbox"> Learning Materials Store</label>
-  </div>
-
-  <!-- Registration Certificate -->
-  <h2 class="section-title">Registration Certificate Upload <span class="hint">(Only file format PDF allowed)</span></h2>
-  <div class="grid">
-    <div class="field span2">
-      <div class="filerow">
-        <div class="choose">Choose File</div>
-        <div class="fname">No file chosen</div>
-        <div class="remove">Remove</div>
+      <div class="field">
+        <label>Ownership<span class="req">*</span></label>
+        <select id="s_ownership"><option>Select</option><option>Government (County)</option><option>Private</option><option>Faith Based Organization</option><option>NGO / Community</option></select>
+      </div>
+      <div class="field">
+        <label>Registration Status<span class="req">*</span></label>
+        <select id="s_regstatus"><option>Select</option><option>Registered</option><option>Provisionally Registered</option><option>Pending Registration</option></select>
+      </div>
+      <div class="field">
+        <label>Year Established</label>
+        <input type="number" id="s_year" placeholder="e.g. 2018">
       </div>
     </div>
+
+    <h2 class="section-title">Location</h2>
+    <div class="grid">
+      <div class="field">
+        <label>County<span class="req">*</span></label>
+        <select id="s_county"><option>Select</option></select>
+      </div>
+      <div class="field">
+        <label>Sub County<span class="req">*</span></label>
+        <select id="s_subcounty"><option>Select</option></select>
+      </div>
+      <div class="field">
+        <label>Ward<span class="req">*</span></label>
+        <select id="s_ward"><option>Select</option></select>
+      </div>
+
+      <div class="field">
+        <label>Zone</label>
+        <input type="text" id="s_zone" placeholder="Enter Zone">
+      </div>
+      <div class="field">
+        <label>Village / Estate</label>
+        <input type="text" id="s_village" placeholder="Enter Village or Estate">
+      </div>
+      <div class="field">
+        <label>Nearest Landmark</label>
+        <input type="text" id="s_landmark" placeholder="e.g. Near Chief's Camp">
+      </div>
+
+      <div class="field span3">
+        <label>Physical Address</label>
+        <textarea id="s_address" placeholder="P.O. Box, street, building"></textarea>
+      </div>
+    </div>
+
+    <h2 class="section-title">Contact Information</h2>
+    <div class="grid">
+      <div class="field">
+        <label>Head Teacher / Centre Manager<span class="req">*</span></label>
+        <input type="text" id="s_headteacher" placeholder="Full Name">
+      </div>
+      <div class="field">
+        <label>Phone Number<span class="req">*</span></label>
+        <input type="tel" id="s_phone" placeholder="07XX XXX XXX">
+      </div>
+      <div class="field">
+        <label>Email Address</label>
+        <input type="email" id="s_email" placeholder="school@example.com">
+      </div>
+    </div>
+
+    <h2 class="section-title">Grade Levels Offered</h2>
+    <div class="check-grid">
+      <label><input type="checkbox" id="s_pg" checked> Playgroup</label>
+      <label><input type="checkbox" id="s_pp1" checked> PP1</label>
+      <label><input type="checkbox" id="s_pp2" checked> PP2</label>
+    </div>
+
+    <h2 class="section-title">Registration Certificate Upload <span class="hint">(Only file format PDF allowed)</span></h2>
+    <div class="grid">
+      <div class="field span2">
+        <div class="filerow">
+          <div class="choose">Choose File</div>
+          <div class="fname">No file chosen</div>
+          <div class="remove">Remove</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-row">
+      <button class="btn" disabled>Back</button>
+      <button class="btn primary" onclick="goStep(2)">Next</button>
+    </div>
   </div>
 
-  <div class="footer-row">
-    <button class="btn">Back</button>
-    <button class="btn primary">Next</button>
+  <!-- STEP 2: FACILITIES & STAFFING -->
+  <div class="panel" data-panel="2">
+
+    <h2 class="section-title">Capacity &amp; Enrolment</h2>
+    <div class="grid">
+      <div class="field">
+        <label>Number of Classrooms<span class="req">*</span></label>
+        <input type="number" id="c_classrooms" placeholder="0">
+      </div>
+      <div class="field">
+        <label>Number of Teachers<span class="req">*</span></label>
+        <input type="number" id="c_teachers" placeholder="0">
+      </div>
+      <div class="field">
+        <label>Current Total Enrolment</label>
+        <input type="number" id="c_enrolment" placeholder="0">
+      </div>
+
+      <div class="field">
+        <label>Pupil-Teacher Ratio</label>
+        <input type="text" id="c_ratio" placeholder="e.g. 25:1">
+      </div>
+      <div class="field">
+        <label>Feeding Programme</label>
+        <select id="c_feeding"><option>Select</option><option>Yes</option><option>No</option></select>
+      </div>
+      <div class="field">
+        <label>School Feeding Provider</label>
+        <input type="text" id="c_feedprovider" placeholder="e.g. County Government, Parent-funded">
+      </div>
+    </div>
+
+    <h2 class="section-title">Teaching Staff</h2>
+    <div class="grid">
+      <div class="field">
+        <label>Lead Teacher Name<span class="req">*</span></label>
+        <input type="text" id="t_leadname" placeholder="Full Name">
+      </div>
+      <div class="field">
+        <label>Lead Teacher Qualification<span class="req">*</span></label>
+        <select id="t_qual"><option>Select</option><option>ECDE Certificate</option><option>ECDE Diploma</option><option>Degree in Education</option><option>Other</option></select>
+      </div>
+      <div class="field">
+        <label>TSC Number (if applicable)</label>
+        <input type="text" id="t_tsc" placeholder="Enter TSC Number">
+      </div>
+
+      <div class="field">
+        <label>Number of Trained Teachers</label>
+        <input type="number" id="t_trained" placeholder="0">
+      </div>
+      <div class="field">
+        <label>Number of Untrained Caregivers</label>
+        <input type="number" id="t_untrained" placeholder="0">
+      </div>
+      <div class="field">
+        <label>Support Staff Count</label>
+        <input type="number" id="t_support" placeholder="0">
+      </div>
+    </div>
+
+    <h2 class="section-title">Facilities Available</h2>
+    <div class="check-grid">
+      <label><input type="checkbox" id="fac_play"> Play Area / Playground</label>
+      <label><input type="checkbox" id="fac_toilets"> Age-Appropriate Toilets</label>
+      <label><input type="checkbox" id="fac_wash"> Handwashing Point</label>
+      <label><input type="checkbox" id="fac_sick"> Sick Bay / First Aid</label>
+      <label><input type="checkbox" id="fac_kitchen"> Kitchen / Feeding Area</label>
+      <label><input type="checkbox" id="fac_fence"> Fenced Compound</label>
+      <label><input type="checkbox" id="fac_water"> Water Supply</label>
+      <label><input type="checkbox" id="fac_power"> Electricity</label>
+      <label><input type="checkbox" id="fac_store"> Learning Materials Store</label>
+    </div>
+
+    <div class="footer-row">
+      <button class="btn" onclick="goStep(1)">Back</button>
+      <button class="btn primary" onclick="goStep(3)">Next</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: REVIEW -->
+  <div class="panel" data-panel="3">
+    <h2 class="section-title">Review &amp; Submit</h2>
+    <p class="empty-note" style="margin-bottom:20px;">Please confirm the details below before submitting. Go back to any step to make changes.</p>
+
+    <div class="review-block">
+      <h3>School Details</h3>
+      <dl class="review-grid" id="review-school"></dl>
+    </div>
+
+    <div class="review-block">
+      <h3>Facilities &amp; Staffing</h3>
+      <dl class="review-grid" id="review-facilities"></dl>
+    </div>
+
+    <div class="review-block">
+      <h3>Facilities Checklist</h3>
+      <div id="review-checklist" style="font-size:13px;color:var(--text);"></div>
+    </div>
+
+    <div class="footer-row">
+      <button class="btn" onclick="goStep(2)">Back</button>
+      <button class="btn primary" onclick="alert('This is a prototype \u2014 submission is not wired to a backend yet.')">Submit</button>
+    </div>
   </div>
 
 </div>
+
+<script>
+  function goStep(n){
+    document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active', p.dataset.panel==n));
+    document.querySelectorAll('.step-btn').forEach(b=>{
+      const s = parseInt(b.dataset.step);
+      b.classList.toggle('active', s===n);
+      b.classList.toggle('done', s<n);
+    });
+    if(n===3) buildReview();
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  document.querySelectorAll('.step-btn').forEach(b=>{
+    b.addEventListener('click', ()=> goStep(parseInt(b.dataset.step)));
+  });
+
+  function val(id){
+    const el = document.getElementById(id);
+    if(!el) return '';
+    return el.value && el.value !== 'Select' ? el.value : '';
+  }
+
+  function item(dt, dd){
+    const wrap = document.createElement('div');
+    wrap.className = 'review-item';
+    wrap.innerHTML = `<dt>${dt}</dt><dd>${dd || '<span class="empty-note">Not provided</span>'}</dd>`;
+    return wrap;
+  }
+
+  function buildReview(){
+    const schoolFields = [
+      ['School Name','s_name'],['MOE Institution Code','s_moecode'],['Institution Type','s_type'],
+      ['Ownership','s_ownership'],['Registration Status','s_regstatus'],['Year Established','s_year'],
+      ['County','s_county'],['Sub County','s_subcounty'],['Ward','s_ward'],
+      ['Head Teacher / Centre Manager','s_headteacher'],['Phone Number','s_phone'],['Email','s_email']
+    ];
+    const facilityFields = [
+      ['Number of Classrooms','c_classrooms'],['Number of Teachers','c_teachers'],['Current Total Enrolment','c_enrolment'],
+      ['Pupil-Teacher Ratio','c_ratio'],['Feeding Programme','c_feeding'],
+      ['Lead Teacher Name','t_leadname'],['Lead Teacher Qualification','t_qual'],['TSC Number','t_tsc']
+    ];
+    const s = document.getElementById('review-school');
+    const f = document.getElementById('review-facilities');
+    s.innerHTML = ''; f.innerHTML = '';
+    schoolFields.forEach(([label,id]) => s.appendChild(item(label, val(id))));
+    facilityFields.forEach(([label,id]) => f.appendChild(item(label, val(id))));
+
+    const grades = [];
+    if(document.getElementById('s_pg').checked) grades.push('Playgroup');
+    if(document.getElementById('s_pp1').checked) grades.push('PP1');
+    if(document.getElementById('s_pp2').checked) grades.push('PP2');
+
+    const facIds = {
+      fac_play:'Play Area / Playground', fac_toilets:'Age-Appropriate Toilets',
+      fac_wash:'Handwashing Point', fac_sick:'Sick Bay / First Aid',
+      fac_kitchen:'Kitchen / Feeding Area', fac_fence:'Fenced Compound',
+      fac_water:'Water Supply', fac_power:'Electricity', fac_store:'Learning Materials Store'
+    };
+    const checked = Object.keys(facIds).filter(id => document.getElementById(id).checked).map(id => facIds[id]);
+
+    const cl = document.getElementById('review-checklist');
+    cl.innerHTML = `<p style="margin:0 0 8px;"><strong>Grade Levels Offered:</strong> ${grades.length ? grades.join(', ') : '<span class="empty-note">None selected</span>'}</p>
+                     <p style="margin:0;"><strong>Facilities:</strong> ${checked.length ? checked.join(', ') : '<span class="empty-note">None selected</span>'}</p>`;
+  }
+</script>
+
 </body>
 </html>
